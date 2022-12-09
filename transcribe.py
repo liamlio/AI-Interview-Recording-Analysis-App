@@ -33,7 +33,15 @@ def main():
     transcript_response = utils.request_transcript(upload_url, header)
 
     # Create a polling endpoint that will let us check when the transcription is complete
-    polling_endpoint = utils.make_polling_endpoint(transcript_response)
+    while True:
+        polling_response = requests.get(polling_endpoint, headers=header)
+        polling_response = polling_response.json()
+
+        if polling_response['status'] == 'completed':
+            break
+
+        time.sleep(5)
+
 
     # Wait until the transcription is complete
     utils.wait_for_completion(polling_endpoint, header)
