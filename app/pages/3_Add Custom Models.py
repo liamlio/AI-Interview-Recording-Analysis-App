@@ -16,7 +16,7 @@ This means, by providing text descriptions of your company's mission, descriptio
 st.write('''For the AssemblyAI Hackathon, some custom text descriptions have been prefilled based on my company's values https://www.betterup.com/en/about-us?hsLang=en, however,
  you're welcome to add any text description to score against the audio interview responses.''')
 
-# Add a rescore feature here, select a campaign and just run scoring on each file csv within the directory. easy
+# ***Add a rescore feature here, select a campaign and just run scoring on each file csv within the directory. easy
 if 'user_id' not in st.session_state:
 	st.session_state.user_id = 'assemblyai'
 

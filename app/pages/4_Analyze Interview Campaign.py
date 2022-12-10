@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import plotly.express as px
 import matplotlib as mlp
-
+from annotated_text import annotated_text, annotation
 from vindent_utils.analysis_pipeline import BUILT_IN_MODELS
 
 st.set_page_config(
@@ -97,27 +97,25 @@ with left:
             tabs = st.tabs(candidates)
             for j, candidate in enumerate(candidates):
                 with tabs[j]:
-                    f = open(campaign_path.replace("\\", "/") + f"/{candidate}/question_{i}/question_0.txt", "r")
-                    lines = "\n".join(f.readlines())
-
-                    fig = px.bar(text=lines)
-                    fig.update_layout(yaxis_title="Score",
-                                    paper_bgcolor='rgba(0,0,0,0)',
-                                    plot_bgcolor='rgba(0,0,0,0)'
-                                )
-                    fig.update_xaxes(visible=False)
-                    fig.update_yaxes(visible=False)
-                    st.plotly_chart(fig, use_container_width=True)
-
-
-
-
-# Analysis tool - base one includes everyone in the campaign
-
-# Plots to compare? Bar graphs for average scores
-
-# Text checking and audio checking
-# Use tabs for this***
-# Where you can look and listen to specific responses
-# st.audio to display a play audio button!!
-# This where I can have little boxes to say yes or no for what models to check on the side column
+                    text_models = st.multiselect(
+                        "By Default, highlighted text is the highest scoring model, but some text could be classified under multiple models. To view alternative classification for the text you can disable some of the models below",
+                        models,
+                        default=models,
+                        key=f"multiselect_text_models_{candidate}"
+                     )
+                    st.audio(campaign_path + f"\{candidate}\question_{i}\\" + f"question_{i}.mp3")
+                    question_candidate_df = pd.read_csv(campaign_path + f"\{candidate}\question_{i}\\" + f"analysis_question_{i}.csv", index_col=0)
+                    question_candidate_df["top_model"] = question_candidate_df[text_models].idxmax(axis=1)
+                    question_candidate_df.drop("embeddings", axis=1, inplace=True)
+                    question_candidate_df
+                    to_annotated = []
+                    for k, row in question_candidate_df.iterrows():
+                        if k%5 == 0 and k != 0:
+                            st.markdown(annotated_text(*tuple(to_annotated)), unsafe_allow_html=True)
+                            to_annotated = []
+                        if row[text_models].sum() > 0:
+                            to_annotated.append((" " + row.text, st.session_state[row.top_model+"_color"]))
+                        else:
+                            to_annotated.append(" " + row.text)
+                    if to_annotated:
+                        st.markdown(annotated_text(*tuple(to_annotated)), unsafe_allow_html=True)
