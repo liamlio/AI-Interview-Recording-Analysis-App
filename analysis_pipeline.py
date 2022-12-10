@@ -5,16 +5,17 @@ import numpy as np
 import pandas as pd
 from transcribe import transcribe
 from transformers import pipeline
+from nltk.tokenize import sent_tokenize
 from scipy.spatial.distance import cosine
 
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
-co = cohere.Client(COHERE_API_KEY)
+CO = cohere.Client(COHERE_API_KEY)
 
-classifier = pipeline("zero-shot-classification",
+CLASSIFIER = pipeline("zero-shot-classification",
                       model="valhalla/distilbart-mnli-12-1")
-built_ins = ["entrepreneurship", "confidence", "Growth Mindset"]
+BUILT_IN_MODELS = ["entrepreneurship", "confidence", "Growth Mindset"]
 
-prefilled_models = {
+BUILT_IN_CUSTOM_MODELS = {
     "Craftpersonship": "Find meaning in what we do through crafting excellence.",
     "Playfulness": "Great ideas come from health and happiness.",
     "Grit": "Perseverance driven by determination and passion.",
@@ -23,8 +24,13 @@ prefilled_models = {
     "Courage": "Dare often and greatly."
 }
 
+def create_embeds(texts, user_id="test"):
+    texts = sent_tokenize(texts)
+    embeds = CO.embed(texts, model="large", truncate="right")
+    return texts, embeds
+
 def score_BART_text(text, model_name):
-    pred = classifier(text, [model_name, "not " + model_name ])
+    pred = CLASSIFIER(text, [model_name, "not " + model_name ])
     if pred["scores"][0] > pred["scores"][1] and pred["labels"][0] == model_name:
         return 1
     elif pred["scores"][1] > pred["scores"][0] and pred["labels"][1] == model_name:
@@ -43,7 +49,7 @@ def score_CUSTOM_text(text_embed, custom_model_embeds):
     else:
         return 0
 
-def score_custom_models(texts_df, customs_models=prefilled_models):
+def score_custom_models(texts_df, custom_models=BUILT_IN_CUSTOM_MODELS):
     for model_name in custom_models:
         _, embeds_custom = create_embeds(custom_models[model_name], user_id="test")
         texts_df[model_name] = texts_df["embeddings"].apply(lambda x: score_CUSTOM_text(x, embeds_custom))
@@ -56,7 +62,7 @@ def audio_pipeline(audio_file, question_id="test", user_id="test"):
     texts, embeds = create_embeds(texts)
     texts_df = pd.DataFrame({"text":texts, "embeddings": embeds.embeddings})
     texts_df = score_custom_models(texts_df)
-    for model in built_ins:
+    for model in BUILT_IN_MODELS:
          texts_df[model] = score_BART_text(texts_df["text"].values, model)
     texts_df.to_csv(f"results/analysis_{question_id}_{user_id}.csv")
     return f"results/analysis_{question_id}_{user_id}.csv"
