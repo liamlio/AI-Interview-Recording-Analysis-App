@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 
-from vindent_utils.analysis_pipeline import COHERE_API_KEY
+from vindent_utils.analysis_pipeline import BUILT_IN_MODELS
 
 st.set_page_config(
     page_title="VintedAI Interview Analysis Dashboard",
@@ -18,7 +18,16 @@ st.title('Analyze Interview Campaigns Dashboard')
 # need a random colour first
 left, right = st.columns([9, 1])
 with right:
-    "cheese"
+    custom_models = pd.read_csv(f"app\pages\database\{st.session_state.user_id}\custom_models_{st.session_state.user_id}.csv", index_col=0)
+    custom_model_names = custom_models["custom_model_name"].values.tolist()
+    st.write("**VincentAI Models**")
+    for model in BUILT_IN_MODELS:
+        st.write(model)
+    st.write()
+    st.write("**Custom Models**")
+    for custom_model in custom_model_names:
+        st.write(custom_model)
+    
 st.color_picker("cheese") # SWEET???
 # Need a drop down to first select the current campaign, based on os file directory LOL
 
