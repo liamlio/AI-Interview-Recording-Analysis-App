@@ -1,13 +1,19 @@
 import streamlit as st
 import pandas as pd
 import os
+import plotly.express as px
+import matplotlib as mlp
 
 from vindent_utils.analysis_pipeline import BUILT_IN_MODELS
 
 st.set_page_config(
     page_title="VintedAI Interview Analysis Dashboard",
     page_icon="",
+    layout="wide"
 )
+
+if 'user_id' not in st.session_state:
+	st.session_state.user_id = 'assemblyai'
 
 st.title('Analyze Interview Campaigns Dashboard')
 
@@ -16,23 +22,70 @@ st.title('Analyze Interview Campaigns Dashboard')
 # Use st.empty to pop up a color_picker
 # Use session_state to keep colour the same across sessions
 # need a random colour first
-left, right = st.columns([9, 1])
-with right:
-    custom_models = pd.read_csv(f"app\pages\database\{st.session_state.user_id}\custom_models_{st.session_state.user_id}.csv", index_col=0)
-    custom_model_names = custom_models["custom_model_name"].values.tolist()
-    st.write("**VincentAI Models**")
-    for model in BUILT_IN_MODELS:
-        st.write(model)
-    st.write()
-    st.write("**Custom Models**")
-    for custom_model in custom_model_names:
-        st.write(custom_model)
+
+left, right= st.columns([4, 1])
+custom_models = pd.read_csv(f"app\pages\database\{st.session_state.user_id}\custom_models_{st.session_state.user_id}.csv", index_col=0)
+custom_model_names = custom_models["custom_model_name"].values.tolist()
+right.write("**VincentAI Models**")
+for model in BUILT_IN_MODELS:
+    right.checkbox(model, value=True, key=model)
+right.write("")
+right.write("**Custom Models**")
+for custom_model in custom_model_names:
+    right.checkbox(custom_model, value=True, key=custom_model)
+
+# Set random colours
+models = BUILT_IN_MODELS + custom_model_names
+cmap = mlp.cm.get_cmap('tab20', len(models))    # PiYG
+cmap_hex = []
+for i in range(cmap.N):
+    rgba = cmap(i)
+    # rgb2hex accepts rgb or rgba
+    cmap_hex.append(mlp.colors.rgb2hex(rgba))
+
+for i,model in enumerate(models):
+    st.session_state[model+"_color"] = cmap_hex[i]
+with left:
+    with st.expander("Change Model Colours"):
+        for model in models:
+            st.session_state[model+"_color"] = st.color_picker(model, value=st.session_state[model+"_color"])
     
-st.color_picker("cheese") # SWEET???
 # Need a drop down to first select the current campaign, based on os file directory LOL
+    interview_campaign = st.selectbox("Select Interview Campaign", options=os.listdir(f"app\pages\database\{st.session_state.user_id}\campaigns"),
+                key="interview_campaign")
+    campaign_path = f"app\pages\database\{st.session_state.user_id}\campaigns\{interview_campaign}"
+    list_candidates = os.listdir(campaign_path)
+    list_candidates.remove("questions")
+    if interview_campaign:
+         candidates = st.multiselect(
+        "Select Candidate Responses",
+        list_candidates,
+        default=list_candidates,
+        key="selected_candidates"
+    )
+    else:
+        candidates = st.multiselect("Select Candidate Responses", [], disabled=True)
+    
+    if interview_campaign:
+        st.write("## Audio Interview Response Analysis")
+        questions = pd.read_json(campaign_path + f"\questions\questions.json", orient="records")
+        for i, q in enumerate(questions["question"].values):
+            st.write(f"### {q}")
+            question_df = pd.DataFrame()
+            for candidate in candidates:
+                question_candidate_df = pd.read_csv(campaign_path + f"\{candidate}\question_{i}\\" + f"analysis_question_{i}.csv", index_col=0)
+                text = "".join(question_candidate_df["text"].values.tolist())
+                question_candidate_dict = question_candidate_df[models].mean(axis=0)
+                question_candidate_dict["Candidate"] = candidate
+                question_candidate_dict["Response"] = text
+                question_candidate_dict["Response Length"] = len(question_candidate_df.values.tolist())
+                question_df = question_df.append(question_candidate_dict.transpose(), ignore_index=True)
+                del question_candidate_df
+            del question_candidate_dict
+            score_df = question_df.set_index("Candidate")[models]
+            fig = px.histogram(score_df, x=models)
+            st.bar_chart(score_df, use_container_width=True)
 
-
-# Then a drop down for submitted audio files
 
 # Analysis tool - base one includes everyone in the campaign
 

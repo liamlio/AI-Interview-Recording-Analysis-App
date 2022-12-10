@@ -4,6 +4,7 @@ import pandas as pd
 st.set_page_config(
     page_title="Add Custom Models",
     page_icon="",
+    layout="wide"
 )
 
 st.title('Add Custom Text Classification Models')
@@ -12,8 +13,10 @@ st.write('''Add custom text classification models to Vinted\'s Video Interview A
 This means, by providing text descriptions of your company's mission, descriptions of your culture values and desired mindsets and behaviours we can then score candidates answers to let
  you easily evaluate multiple candidates on what's important to your company outside of technical skill.''')
 
-st.write('''For the AssemblyAI Hackathon, some custom text descriptions have been prefilled based on my companies values https://www.betterup.com/en/about-us?hsLang=en, however,
+st.write('''For the AssemblyAI Hackathon, some custom text descriptions have been prefilled based on my company's values https://www.betterup.com/en/about-us?hsLang=en, however,
  you're welcome to add any text description to score against the audio interview responses.''')
+
+# Add a rescore feature here, select a campaign and just run scoring on each file csv within the directory. easy
 if 'user_id' not in st.session_state:
 	st.session_state.user_id = 'assemblyai'
 
