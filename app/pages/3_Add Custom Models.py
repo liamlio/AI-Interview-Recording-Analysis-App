@@ -17,7 +17,7 @@ st.write('''For the AssemblyAI Hackathon, some custom text descriptions have bee
 if 'user_id' not in st.session_state:
 	st.session_state.user_id = 'assemblyai'
 
-custom_models = pd.read_csv(f"app\pages\database\custom_models_{st.session_state.user_id}.csv", index_col=0)
+custom_models = pd.read_csv(f"app\pages\database\{st.session_state.user_id}\custom_models_{st.session_state.user_id}.csv", index_col=0)
 # Need a form, prefill it
 
 with st.form("my_form"):
@@ -31,8 +31,8 @@ with st.form("my_form"):
         custom_models = pd.concat([pd.DataFrame({"custom_model_name": new_custom_model_name, "custom_model_description": new_custom_model_description}, index=[0]), custom_models])
         custom_models.reset_index(inplace=True, drop=True)
         custom_models.drop_duplicates(subset="custom_model_name", keep="first", inplace=True)
-        custom_models.to_csv(f"app\pages\database\custom_models_{st.session_state.user_id}.csv")
-
+        custom_models.to_csv(f"app\pages\database\{st.session_state.user_id}\custom_models_{st.session_state.user_id}.csv")
+    # To add: A warning if this will overwrite a current custom model
 
 
 with st.expander("Your Custom Models", expanded=False):
@@ -48,3 +48,5 @@ st.write('''VintedAi uses semantic similarity modelling to determine how similar
  are to the provided text descriptions for custom models. This allows us to score the text and evaluate whether
   the candidates response is similar enough to your custom model text to be under your custom model in the candidate analysis dashboard''')
 st.write('''This allows us to easily provide our users that ability to customize VintedAI's audio pre-screening test to your company's needs''')
+
+# Current limitation, can't set these AFTER having started a campaign?
