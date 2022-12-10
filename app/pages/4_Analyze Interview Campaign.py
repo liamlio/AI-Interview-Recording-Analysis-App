@@ -36,6 +36,11 @@ for custom_model in custom_model_names:
 
 # Set random colours
 models = BUILT_IN_MODELS + custom_model_names
+chosen_models =[]
+for model in models:
+    if st.session_state[model]:
+        chosen_models.append(model)
+models = chosen_models
 cmap = mlp.cm.get_cmap('tab20', len(models))    # PiYG
 cmap_hex = []
 for i in range(cmap.N):
@@ -82,9 +87,29 @@ with left:
                 question_df = question_df.append(question_candidate_dict.transpose(), ignore_index=True)
                 del question_candidate_df
             del question_candidate_dict
-            score_df = question_df.set_index("Candidate")[models]
-            fig = px.histogram(score_df, x=models)
-            st.bar_chart(score_df, use_container_width=True)
+            fig = px.bar(question_df, y=models, x="Candidate", barmode='group',
+                        labels={'variable': 'Model'},
+                        color_discrete_map={
+                            model:st.session_state[model+"_color"] for model in models
+                        })
+            fig.update_layout(yaxis_title="Score")
+            st.plotly_chart(fig, use_container_width=True)
+            tabs = st.tabs(candidates)
+            for j, candidate in enumerate(candidates):
+                with tabs[j]:
+                    f = open(campaign_path.replace("\\", "/") + f"/{candidate}/question_{i}/question_0.txt", "r")
+                    lines = "\n".join(f.readlines())
+
+                    fig = px.bar(text=lines)
+                    fig.update_layout(yaxis_title="Score",
+                                    paper_bgcolor='rgba(0,0,0,0)',
+                                    plot_bgcolor='rgba(0,0,0,0)'
+                                )
+                    fig.update_xaxes(visible=False)
+                    fig.update_yaxes(visible=False)
+                    st.plotly_chart(fig, use_container_width=True)
+
+
 
 
 # Analysis tool - base one includes everyone in the campaign
