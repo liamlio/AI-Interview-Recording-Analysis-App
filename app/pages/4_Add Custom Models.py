@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+from glob import glob
+from vindent_utils.analysis_pipeline import score_new_custom_model
 
 st.set_page_config(
     page_title="Add Custom Models",
@@ -30,11 +32,17 @@ with st.form("my_form"):
 
    # Every form must have a submit button.
     submitted = st.form_submit_button("Submit")
-    if submitted:
+    if submitted and new_custom_model_description:
         custom_models = pd.concat([pd.DataFrame({"custom_model_name": new_custom_model_name, "custom_model_description": new_custom_model_description}, index=[0]), custom_models])
         custom_models.reset_index(inplace=True, drop=True)
         custom_models.drop_duplicates(subset="custom_model_name", keep="first", inplace=True)
         custom_models.to_csv(f"app/pages/database/{st.session_state.user_id}/custom_models_{st.session_state.user_id}.csv")
+        files_to_score = list(glob(f'app/pages/database/{st.session_state.user_id}/campaigns/*/*/question*/analysis*.csv'))
+        with st.spinner('Scoring Interview with new custom model'):
+            for to_score in files_to_score:
+                df = pd.read_csv(to_score)
+                df = score_new_custom_model(df, custom_model={new_custom_model_name: new_custom_model_description})
+                df.to_csv(to_score)
     # To add: A warning if this will overwrite a current custom model
 
 

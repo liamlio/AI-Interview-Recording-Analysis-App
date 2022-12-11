@@ -7,9 +7,16 @@
 # Can I use flask purely for routing to streamlit apps and pages?
 
 import streamlit as st
-import pandas as pd
+import os
+import json
 
 st.write("# Create a new Interview Campaign")
+
+# Campaign name submit
+new_campaign_name = st.text_input(label="New Campaign Name", placeholder="ex: Senior Manager", key="new_campaign_name")
+
+# Questions
+
 
 
 st.write("Could do this by having a separate streamlit app that is create through an aws service when the button is clicked here, data is saved in a specific spot that is fetched in the dashboard")
