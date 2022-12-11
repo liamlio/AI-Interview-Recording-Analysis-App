@@ -58,11 +58,11 @@ if submitted:
     Path(user_path).mkdir(parents=True, exist_ok=True)
     for i in range(len(current_campaign["questions"])):
         val = st.session_state[f"question_{i}"]
-        dest_file = open(f'{user_path}/question_{i}.mp3', 'wb+')
+        dest_file = open(user_path / f'question_{i}.mp3', 'wb+')
         dest_file.write(val.getbuffer())
         dest_file.close()
-        texts_df = audio_pipeline(user_path + f'/analysis_question_{i}.mp3')
-        texts_df.to_csv(user_path + f'/question_{i}.csv')
+        texts_df = audio_pipeline(user_path / f'analysis_question_{i}.mp3')
+        texts_df.to_csv(user_path / f'question_{i}.csv')
         st.write(f"Question {i} Successfully Uploaded and Processed")
         time.sleep(5)
     st.write("Successfully Uploaded and Processed all Recordings. Thank you!")

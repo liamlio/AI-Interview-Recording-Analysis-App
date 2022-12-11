@@ -74,12 +74,12 @@ with left:
     
     if interview_campaign:
         st.write("## Audio Interview Response Analysis")
-        questions = pd.read_json(campaign_path + f"\questions\questions.json", orient="records")
+        questions = pd.read_json(campaign_path / f"questions" / "questions.json", orient="records")
         for i, q in enumerate(questions["question"].values):
             st.write(f"### {q}")
             question_df = pd.DataFrame()
             for candidate in candidates:
-                question_candidate_df = pd.read_csv(campaign_path + f"\{candidate}\\" + f"analysis_question_{i}.csv", index_col=0)
+                question_candidate_df = pd.read_csv(campaign_path / candidate / f"analysis_question_{i}.csv", index_col=0)
                 text = "".join(question_candidate_df["text"].values.tolist())
                 question_candidate_dict = question_candidate_df[models].mean(axis=0)
                 question_candidate_dict["Candidate"] = candidate
@@ -104,8 +104,8 @@ with left:
                         default=models,
                         key=f"multiselect_text_models_{candidate}_question_{i}"
                      )
-                    st.audio(campaign_path + f"\{candidate}\\" + f"question_{i}.mp3")
-                    question_candidate_df = pd.read_csv(campaign_path + f"\{candidate}\\" + f"analysis_question_{i}.csv", index_col=0)
+                    st.audio(str(campaign_path / candidate / f"question_{i}.mp3"))
+                    question_candidate_df = pd.read_csv(campaign_path / candidate /  f"analysis_question_{i}.csv", index_col=0)
                     question_candidate_df["top_model"] = question_candidate_df[text_models].idxmax(axis=1)
                     question_candidate_df.drop("embeddings", axis=1, inplace=True)
                     # question_candidate_df
