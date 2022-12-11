@@ -8,6 +8,7 @@
 
 import streamlit as st
 import pandas as pd
+import json
 
 st.set_page_config(
     page_title="Add Custom Models",
@@ -25,15 +26,12 @@ if 'user_id' not in st.session_state:
 	st.session_state.user_id = 'assemblyai'
 
 
+with open(f"app/pages/database/{st.session_state.user_id}/current_campaign.json") as json_file:
+    current_campaign = json.load(json_file)
+st.header(current_campaign["name"])
 
-st.header(st.session_state.current_campaign)
+for question in current_campaign["questions"]:
+    with st.container():
+        st.write(f"#### {question}")
 
-if st.session_state.current_campaign != 'No Current Campaign':
-    for question in st.session_state.campaign_questions:
-        st.write(f"## {question}")
-        
-
-
-st.write("Could do this by having a separate streamlit app that is create through an aws service when the button is clicked here, data is saved in a specific spot that is fetched in the dashboard")
-# current_campaigns = pd.read_csv("current_campaigns.csv")
 
