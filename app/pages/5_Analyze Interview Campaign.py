@@ -25,7 +25,7 @@ st.title('Analyze Interview Campaigns Dashboard')
 # need a random colour first
 
 left, right= st.columns([4, 1])
-custom_models = pd.read_csv(Path(f"app\pages\database\{st.session_state.user_id}\custom_models_{st.session_state.user_id}.csv"), index_col=0)
+custom_models = pd.read_csv(Path(f"app/pages/database/{st.session_state.user_id}/custom_models_{st.session_state.user_id}.csv"), index_col=0)
 custom_model_names = custom_models["custom_model_name"].values.tolist()
 right.write("**VincentAI Models**")
 for model in BUILT_IN_MODELS:
@@ -57,9 +57,9 @@ with left:
             st.session_state[model+"_color"] = st.color_picker(model, value=st.session_state[model+"_color"])
     
 # Need a drop down to first select the current campaign, based on os file directory LOL
-    interview_campaign = st.selectbox("Select Interview Campaign", options=os.listdir(Path(f"app\pages\database\{st.session_state.user_id}\campaigns")),
+    interview_campaign = st.selectbox("Select Interview Campaign", options=os.listdir(Path(f"app/pages/database/{st.session_state.user_id}/campaigns")),
                 key="interview_campaign")
-    campaign_path = Path(f"app\pages\database\{st.session_state.user_id}\campaigns\{interview_campaign}")
+    campaign_path = Path(f"app/pages/database/{st.session_state.user_id}/campaigns/{interview_campaign}")
     list_candidates = os.listdir(campaign_path)
     list_candidates.remove("questions")
     if interview_campaign:
