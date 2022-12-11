@@ -67,7 +67,7 @@ if submitted:
         dest_file = open(user_path / f'question_{i}.mp3', 'wb+')
         dest_file.write(val.getbuffer())
         dest_file.close()
-        texts_df = audio_pipeline(user_path / f'question_{i}.mp3')
+        texts_df = audio_pipeline(user_path / f'question_{i}.mp3', custom_models=custom_models)
         texts_df.to_csv(user_path / f'analysis_question_{i}.csv')
         st.write(f"Question {i+1} Successfully Uploaded and Processed")
         time.sleep(5)
