@@ -38,8 +38,8 @@ with st.form("new_custom_model_form"):
         custom_models.reset_index(inplace=True, drop=True)
         custom_models.drop_duplicates(subset="custom_model_name", keep="first", inplace=True)
         custom_models.to_csv(Path(f"app/pages/database/{st.session_state.user_id}/custom_models_{st.session_state.user_id}.csv"))
-        files_to_score = list(glob(Path(f'app/pages/database/{st.session_state.user_id}/campaigns/*/*/analysis*.csv')))
-        with st.spinner('Scoring Interview with new custom model'):
+        files_to_score = list(glob(str(Path(f'app/pages/database/{st.session_state.user_id}/campaigns/*/*/analysis*.csv'))))
+        with st.spinner('Scoring Interviews with new custom model'):
             for to_score in files_to_score:
                 df = pd.read_csv(to_score)
                 df = score_new_custom_model(df, custom_model={new_custom_model_name: new_custom_model_description})
