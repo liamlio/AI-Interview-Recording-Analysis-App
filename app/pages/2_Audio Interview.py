@@ -37,6 +37,9 @@ st.header(current_campaign["name"])
 # with st.form("first_lastname"):
 user_name = st.text_input("First and Last name", placeholder="Jane Doe")
 
+#### IF audio component is what's slowing everything down, remove it and replace with upload file
+#### Then just link users to an online audio recorders to get the files from
+
 st.write("Please limit all responses to less then 3 minutes in audio length.")
 for i, question in enumerate(current_campaign["questions"]):
     with st.container():
