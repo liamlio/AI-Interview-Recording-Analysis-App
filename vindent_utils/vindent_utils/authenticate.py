@@ -16,7 +16,8 @@ CLIENT_ID = os.environ.get("CLIENT_ID")
 # APP_URI = os.environ.get("APP_URI")
 COGNITO_DOMAIN = "https://vintedAI-assembly-hackathon.auth.us-east-1.amazoncognito.com"
 CLIENT_SECRET = ""
-APP_URI = "https://www.google.com"
+APP_URI = "https://www.google.com" #Tried google for the redirect after login since my EC2 instance was only http and not https :(
+# That didn't work since my app wouldn't get the authentication token
 # ------------------------------------
 # Initialise Streamlit state variables
 # ------------------------------------

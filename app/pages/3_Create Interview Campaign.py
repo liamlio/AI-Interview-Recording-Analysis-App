@@ -1,11 +1,3 @@
-# Login streamlit page
-# Hard code User=Assembly, PW=50k
-# Will also be the base page
-
-# Should create a new campaign with a new question
-# Should generate a unique link and route the user who clicks the link to a login page
-# Can I use flask purely for routing to streamlit apps and pages?
-
 import streamlit as st
 import os
 import json
@@ -34,4 +26,7 @@ if st.button("Submit"):
     }
     with open(f"app/pages/database/{st.session_state.user_id}/current_campaign.json", "w") as write_file:
         json.dump(current_campaign, write_file, indent=4)
-
+    os.mkdir(f"app/pages/database/{st.session_state.user_id}/campaigns/{new_campaign_name}")
+    os.mkdir(f"app/pages/database/{st.session_state.user_id}/campaigns/{new_campaign_name}/questions")
+    with open(f"app/pages/database/{st.session_state.user_id}/campaigns/{new_campaign_name}/questions/questions.json", "w") as write_file:
+        json.dump([{"question":q} for q in current_campaign["questions"]], write_file, indent=4)

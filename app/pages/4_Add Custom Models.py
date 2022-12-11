@@ -25,7 +25,7 @@ if 'user_id' not in st.session_state:
 custom_models = pd.read_csv(f"app/pages/database/{st.session_state.user_id}/custom_models_{st.session_state.user_id}.csv", index_col=0)
 # Need a form, prefill it
 
-with st.form("my_form"):
+with st.form("new_custom_model_form"):
     new_custom_model_name = st.text_input(label="Custom Model Name", placeholder="Model Name")
     new_custom_model_description = st.text_area(label="Custom Model Description",
                                     placeholder='For the best results, provide a 2-3 sentence description of what you want to evaluate and compare in your candidates responses.')
