@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import json
+from pathlib import Path
 
 st.write("# Create a new Interview Campaign")
 if 'user_id' not in st.session_state:
@@ -24,9 +25,9 @@ if st.button("Submit"):
         "name": new_campaign_name,
         "questions": questions
     }
-    with open(f"app/pages/database/{st.session_state.user_id}/current_campaign.json", "w") as write_file:
+    with open(Path(f"app/pages/database/{st.session_state.user_id}/current_campaign.json", "w")) as write_file:
         json.dump(current_campaign, write_file, indent=4)
-    os.mkdir(f"app/pages/database/{st.session_state.user_id}/campaigns/{new_campaign_name}")
-    os.mkdir(f"app/pages/database/{st.session_state.user_id}/campaigns/{new_campaign_name}/questions")
-    with open(f"app/pages/database/{st.session_state.user_id}/campaigns/{new_campaign_name}/questions/questions.json", "w") as write_file:
+    Path(f"app/pages/database/{st.session_state.user_id}/campaigns/{new_campaign_name}").mkdir(parents=True, exist_ok=True)
+    Path(f"app/pages/database/{st.session_state.user_id}/campaigns/{new_campaign_name}/questions").mkdir(parents=True, exist_ok=True)
+    with open(Path(f"app/pages/database/{st.session_state.user_id}/campaigns/{new_campaign_name}/questions/questions.json"), "w") as write_file:
         json.dump([{"question":q} for q in current_campaign["questions"]], write_file, indent=4)

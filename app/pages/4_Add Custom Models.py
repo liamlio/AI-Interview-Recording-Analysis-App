@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from pathlib import Path
 from glob import glob
 from vindent_utils.analysis_pipeline import score_new_custom_model
 
@@ -22,7 +23,7 @@ st.write('''For the AssemblyAI Hackathon, some custom text descriptions have bee
 if 'user_id' not in st.session_state:
 	st.session_state.user_id = 'assemblyai'
 
-custom_models = pd.read_csv(f"app/pages/database/{st.session_state.user_id}/custom_models_{st.session_state.user_id}.csv", index_col=0)
+custom_models = pd.read_csv(Path(f"app/pages/database/{st.session_state.user_id}/custom_models_{st.session_state.user_id}.csv"), index_col=0)
 # Need a form, prefill it
 
 with st.form("new_custom_model_form"):
@@ -36,8 +37,8 @@ with st.form("new_custom_model_form"):
         custom_models = pd.concat([pd.DataFrame({"custom_model_name": new_custom_model_name, "custom_model_description": new_custom_model_description}, index=[0]), custom_models])
         custom_models.reset_index(inplace=True, drop=True)
         custom_models.drop_duplicates(subset="custom_model_name", keep="first", inplace=True)
-        custom_models.to_csv(f"app/pages/database/{st.session_state.user_id}/custom_models_{st.session_state.user_id}.csv")
-        files_to_score = list(glob(f'app/pages/database/{st.session_state.user_id}/campaigns/*/*/question*/analysis*.csv'))
+        custom_models.to_csv(Path(f"app/pages/database/{st.session_state.user_id}/custom_models_{st.session_state.user_id}.csv"))
+        files_to_score = list(glob(Path(f'app/pages/database/{st.session_state.user_id}/campaigns/*/*/analysis*.csv')))
         with st.spinner('Scoring Interview with new custom model'):
             for to_score in files_to_score:
                 df = pd.read_csv(to_score)

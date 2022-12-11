@@ -3,7 +3,8 @@ import pandas as pd
 import os
 import plotly.express as px
 import matplotlib as mlp
-from annotated_text import annotated_text, annotation
+from annotated_text import annotated_text
+from pathlib import Path
 from vindent_utils.analysis_pipeline import BUILT_IN_MODELS
 
 st.set_page_config(
@@ -24,7 +25,7 @@ st.title('Analyze Interview Campaigns Dashboard')
 # need a random colour first
 
 left, right= st.columns([4, 1])
-custom_models = pd.read_csv(f"app\pages\database\{st.session_state.user_id}\custom_models_{st.session_state.user_id}.csv", index_col=0)
+custom_models = pd.read_csv(Path(f"app\pages\database\{st.session_state.user_id}\custom_models_{st.session_state.user_id}.csv"), index_col=0)
 custom_model_names = custom_models["custom_model_name"].values.tolist()
 right.write("**VincentAI Models**")
 for model in BUILT_IN_MODELS:
@@ -56,9 +57,9 @@ with left:
             st.session_state[model+"_color"] = st.color_picker(model, value=st.session_state[model+"_color"])
     
 # Need a drop down to first select the current campaign, based on os file directory LOL
-    interview_campaign = st.selectbox("Select Interview Campaign", options=os.listdir(f"app\pages\database\{st.session_state.user_id}\campaigns"),
+    interview_campaign = st.selectbox("Select Interview Campaign", options=os.listdir(Path(f"app\pages\database\{st.session_state.user_id}\campaigns")),
                 key="interview_campaign")
-    campaign_path = f"app\pages\database\{st.session_state.user_id}\campaigns\{interview_campaign}"
+    campaign_path = Path(f"app\pages\database\{st.session_state.user_id}\campaigns\{interview_campaign}")
     list_candidates = os.listdir(campaign_path)
     list_candidates.remove("questions")
     if interview_campaign:
@@ -78,7 +79,7 @@ with left:
             st.write(f"### {q}")
             question_df = pd.DataFrame()
             for candidate in candidates:
-                question_candidate_df = pd.read_csv(campaign_path + f"\{candidate}\question_{i}\\" + f"analysis_question_{i}.csv", index_col=0)
+                question_candidate_df = pd.read_csv(campaign_path + f"\{candidate}\\" + f"analysis_question_{i}.csv", index_col=0)
                 text = "".join(question_candidate_df["text"].values.tolist())
                 question_candidate_dict = question_candidate_df[models].mean(axis=0)
                 question_candidate_dict["Candidate"] = candidate
@@ -101,13 +102,13 @@ with left:
                         "By Default, highlighted text is the highest scoring model, but some text could be classified under multiple models. To view alternative classification for the text you can disable some of the models below",
                         models,
                         default=models,
-                        key=f"multiselect_text_models_{candidate}"
+                        key=f"multiselect_text_models_{candidate}_question_{i}"
                      )
-                    st.audio(campaign_path + f"\{candidate}\question_{i}\\" + f"question_{i}.mp3")
-                    question_candidate_df = pd.read_csv(campaign_path + f"\{candidate}\question_{i}\\" + f"analysis_question_{i}.csv", index_col=0)
+                    st.audio(campaign_path + f"\{candidate}\\" + f"question_{i}.mp3")
+                    question_candidate_df = pd.read_csv(campaign_path + f"\{candidate}\\" + f"analysis_question_{i}.csv", index_col=0)
                     question_candidate_df["top_model"] = question_candidate_df[text_models].idxmax(axis=1)
                     question_candidate_df.drop("embeddings", axis=1, inplace=True)
-                    question_candidate_df
+                    # question_candidate_df
                     to_annotated = []
                     for k, row in question_candidate_df.iterrows():
                         if k%5 == 0 and k != 0:
