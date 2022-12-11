@@ -16,7 +16,6 @@ beautifulsoup4==4.11.1
 bleach==5.0.1
 blinker==1.5
 cachetools==5.2.0
-certifi @ file:///C:/b/abs_ac29jvt43w/croot/certifi_1665076682579/work/certifi
 cffi==1.15.1
 charset-normalizer==2.1.1
 click==8.1.3
@@ -139,7 +138,6 @@ six==1.16.0
 smmap==5.0.0
 sniffio==1.3.0
 soupsieve==2.3.2.post1
-st-annotated-text @ AI-Interview-Recording-Analysis-App/st-annotated-text-custom
 stack-data==0.6.2
 starlette==0.22.0
 streamlit==1.15.2
@@ -163,7 +161,6 @@ tzlocal==4.2
 uri-template==1.2.0
 urllib3==1.26.13
 validators==0.20.0
-vindent-utils @ AI-Interview-Recording-Analysis-App/vindent_utils
 watchdog==2.2.0
 wcwidth==0.2.5
 webcolors==1.12
