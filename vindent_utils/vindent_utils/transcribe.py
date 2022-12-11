@@ -4,7 +4,7 @@ import time
 import requests
 
 AAI_API_KEY = os.getenv("AAI_API_KEY")
-
+AAI_API_KEY = ""
 
 def transcribe(audio_file):
     if AAI_API_KEY is None:

@@ -10,7 +10,7 @@ from nltk.tokenize import sent_tokenize
 from scipy.spatial.distance import cosine
 
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
-
+COHERE_API_KEY = ""
 CO = cohere.Client(COHERE_API_KEY)
 
 CLASSIFIER = pipeline("zero-shot-classification",
