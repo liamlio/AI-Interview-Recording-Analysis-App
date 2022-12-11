@@ -55,25 +55,25 @@ for i, question in enumerate(current_campaign["questions"]):
         # web component returns arraybuffer from WAV-blob
 
 
-# submitted = st.button("Submit Interview")
-if st.button("Submit Interview"):
+submitted = st.button("Submit Interview")
+submitted
+if submitted:
     st.write("Uploading and Processing Audio Recordings...")
     user_path = f"app/pages/database/{st.session_state.user_id}/campaigns/{current_campaign['name']}/{user_name}"
     Path(user_path).mkdir(parents=True, exist_ok=True)
-    with st.spinner("Uploading and Processing Audio Recordings, please wait..."):
-        for i in range(len(current_campaign["questions"])):
-            val = st.session_state[f"question_{i}"]
-            if isinstance(val, dict):  # retrieve audio data
-                ind, val = zip(*val['arr'].items())
-                ind = np.array(ind, dtype=int)  # convert to np array
-                val = np.array(val)             # convert to np array
-                sorted_ints = val[ind]
-                stream = BytesIO(b"".join([int(v).to_bytes(1, "big") for v in sorted_ints]))
-                wav_bytes = stream.read()
-                with open(user_path + f'/question_{i}.wav', mode='bx') as f:
-                    f.write(wav_bytes)
-                texts_df = audio_pipeline(user_path + f'/question_{i}.wav')
-                texts_df.to_csv(user_path + f'/question_{i}.csv')
+    for i in range(len(current_campaign["questions"])):
+        val = st.session_state[f"question_{i}"]
+        if isinstance(val, dict):  # retrieve audio data
+            ind, val = zip(*val['arr'].items())
+            ind = np.array(ind, dtype=int)  # convert to np array
+            val = np.array(val)             # convert to np array
+            sorted_ints = val[ind]
+            stream = BytesIO(b"".join([int(v).to_bytes(1, "big") for v in sorted_ints]))
+            wav_bytes = stream.read()
+            with open(user_path + f'/question_{i}.wav', mode='bx') as f:
+                f.write(wav_bytes)
+            texts_df = audio_pipeline(user_path + f'/question_{i}.wav')
+            texts_df.to_csv(user_path + f'/question_{i}.csv')
 
 
 
