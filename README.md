@@ -2,6 +2,10 @@
 
 A pre-screening interview tool powered by AI to allow customers to screen more candidates at the top of their hiring funnel
 
+Notes for future work:   
+Limit scoring to longer sentences   
+Use chatgpt3 and gpt3 to score for star method and other things   
+
 ## Get Started
 
 If you'd like to test this app locally, please follow these steps:
